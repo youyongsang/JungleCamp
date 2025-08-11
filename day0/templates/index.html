@@ -98,14 +98,19 @@
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ title, content })
       })
-      .then(response => response.json())
-      .then(data => {
-        alert("저장 완료: " + data["message"]);
+      .then(response => response.json().then(data => ({status: response.status, body: data})))
+      .then(({status, body}) => {
+        if (status !== 201) {
+          alert(body.message || "저장 실패");
+          return;
+        }
+        alert("저장 완료: " + body["message"]);
         hideForm();
         loadPosts();
       })
-      .catch(() => {
+      .catch((err) => {
         alert("저장 중 오류가 발생했습니다.");
+        console.error(err);
       });
     }
 

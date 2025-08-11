@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>프로젝트 카드 - JSON → HTML (Tailwind)</title>
+    <!-- Tailwind CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <meta name="color-scheme" content="light dark" />
+    <style>
+      .card {
+        transition: transform 0.4s cubic-bezier(.4,2,.6,1), box-shadow 0.4s;
+        transform: scale(1);
+        z-index: 1;
+        height: auto;
+        overflow: visible;
+        position: relative;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-700 text-gray-900">
+    <div class="container mx-auto p-4">
+      <h1 class="text-white text-2xl sm:text-3xl font-bold tracking-tight">
+        프로젝트 아이디어
+      </h1>
+      <div
+        id="cards"
+        class="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 mt-3"
+      ></div>
+    </div>
+
+    <script>
+      const projects = [
+        {
+          title: "환경 보호 앱 개발",
+          description: "사용자가 탄소 발자국을 줄이는 데 도움을 주는 앱입니다.",
+          skills: ["HTML", "CSS", "JavaScript"],
+          duration: "3개월"
+        },
+        {
+          title: "AI 기반 번역 도구",
+          description: "실시간으로 언어를 번역해주는 웹 애플리케이션.",
+          skills: ["Python", "TensorFlow", "JavaScript"],
+          duration: "6개월"
+        },
+        {
+          title: "자산 관리 웹",
+          description: "지출 내역을 시각화하고 절약 목표를 관리합니다.",
+          skills: ["HTML", "CSS", "Chart.js", "Flask"],
+          duration: "2개월"
+        },
+      ];
+
+      function renderCards(list) {
+        const container = document.getElementById("cards");
+        container.innerHTML = "";
+
+        list.forEach((p, idx) => {
+          const skillsBadges = (p.skills || [])
+            .map((s) => `
+              <span class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium bg-white border-gray-200 text-gray-700">${s}</span>
+            `)
+            .join("\n");
+
+          container.innerHTML += `
+            <div class="card bg-white rounded-2xl shadow-sm p-5 flex flex-col gap-3 relative"
+                 data-idx="${idx}">
+              <h2 class="text-lg font-semibold leading-snug">${p.title}</h2>
+              <p class="text-sm text-gray-600">${p.description}</p>
+              <div class="flex flex-wrap gap-2 mt-1">
+                ${skillsBadges}
+              </div>
+              <div class="mt-2 text-sm text-gray-500">
+                <span class="font-medium text-gray-700">예상 완료 기간:</span> ${p.duration}
+              </div>
+            </div>
+          `;
+        });
+      }
+
+      renderCards(projects);
+    </script>
+  </body>
+</html>
