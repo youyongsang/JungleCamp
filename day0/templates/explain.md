@@ -37,6 +37,12 @@ HTML이 문서의 구조(뼈대)를 담당한다면, CSS는 그 구조에 **디�
 ### 4.1 레이아웃(Layout)
 - **display**: 요소의 박스 유형(블록, 인라인, flex, grid 등)  
 - **position**: 위치 지정 방식(static, relative, absolute, fixed, sticky)  
+  - **absolute**:  
+    - 💬 학생: "absolute는 무조건 부모 요소를 기준으로 움직이는 건가요?"  
+    - 🧑‍🏫 답변: **아니요, 부모 요소 중에서 `position: relative`가 설정된 요소가 있으면 그걸 기준으로 하고, 없으면 브라우저 화면(body)을 기준으로 움직여요.**
+  - **fixed**:  
+    - 🐥 학생: "fixed랑 absolute의 차이는 뭔가요?"  
+    - 🧑‍🏫 답변: **fixed는 화면을 기준으로 고정되기 때문에, 스크롤해도 움직이지 않아요. absolute는 기준이 되는 부모(또는 body)에 따라 움직입니다.**
 - **top, right, bottom, left**: 위치 좌표  
 - **float, clear**: 요소의 띄움/흐름 제어  
 - **z-index**: 쌓임 순서(레이어)  
@@ -89,6 +95,25 @@ HTML이 문서의 구조(뼈대)를 담당한다면, CSS는 그 구조에 **디�
 
 ---
 
+## 💬 학생 질문 예시와 답변
+
+- 💬 "absolute는 무조건 부모 요소를 기준으로 움직이는 건가요?"  
+  🧑‍🏫 **아니요, 부모 요소 중에서 `position: relative`가 설정된 요소가 있으면 그걸 기준으로 하고, 없으면 브라우저 화면(body)을 기준으로 움직여요.**
+
+- 🐥 "fixed랑 absolute의 차이는 뭔가요?"  
+  🧑‍🏫 **fixed는 화면을 기준으로 고정되기 때문에, 스크롤해도 움직이지 않아요. absolute는 기준이 되는 부모(또는 body)에 따라 움직입니다.**
+
+- 💬 "z-index는 왜 필요한가요?"  
+  🧑‍🏫 **여러 요소가 겹칠 때, 어떤 요소가 위에 보일지 순서를 정하는 속성입니다. 값이 클수록 위에 보입니다.**
+
+- 🐥 "margin과 padding의 차이는 뭔가요?"  
+  🧑‍🏫 **margin은 요소 바깥 여백, padding은 요소 안쪽(테두리와 내용 사이) 여백입니다.**
+
+- 💬 "display: none과 visibility: hidden의 차이는?"  
+  🧑‍🏫 **display: none은 요소가 아예 사라져서 공간도 차지하지 않고, visibility: hidden은 요소가 보이지 않지만 공간은 그대로 남아 있습니다.**
+
+---
+
 ## 5. CSS 적용 방법
 
 1. **인라인 스타일**  
@@ -131,33 +156,126 @@ HTML이 문서의 구조(뼈대)를 담당한다면, CSS는 그 구조에 **디�
 
 ---
 
-## 8. CSS 예시
+## 8. CSS 예시 (확장 및 상세 설명)
 
 ```css
-/* 전체 배경색, 폰트 지정 */
+/* 1. 전체 배경색, 폰트 지정 */
 body {
-  background-color: #f5f5f5;
-  font-family: 'Arial', sans-serif;
+  background-color: #f5f5f5;         /* 전체 배경을 연한 회색으로 */
+  font-family: 'Arial', sans-serif;  /* Arial 폰트, 없으면 기본 산세리프 */
+  color: #222;                       /* 전체 글자색을 진한 회색으로 */
+  margin: 0;                         /* 브라우저 기본 여백 제거 */
+  padding: 0;
 }
 
-/* 버튼 스타일 */
+/* 2. 제목 스타일 */
+h1, h2 {
+  color: #2c3e50;                    /* 제목 글자색 */
+  margin-bottom: 16px;               /* 아래쪽 여백 */
+  letter-spacing: 1px;               /* 글자 간격 */
+}
+
+/* 3. 버튼 스타일 */
 button {
-  background: #3498db;
-  color: #fff;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background 0.3s;
+  background: #3498db;               /* 파란색 배경 */
+  color: #fff;                       /* 흰색 글자 */
+  border: none;                      /* 테두리 없음 */
+  padding: 8px 16px;                 /* 상하 8px, 좌우 16px 여백 */
+  border-radius: 4px;                /* 모서리 둥글게 */
+  cursor: pointer;                   /* 마우스 올리면 손가락 모양 */
+  transition: background 0.3s;       /* 배경색 변화 애니메이션 */
+  font-size: 16px;                   /* 글자 크기 */
+  margin-right: 8px;                 /* 버튼 사이 여백 */
 }
 button:hover {
-  background: #217dbb;
+  background: #217dbb;               /* 마우스 올리면 더 진한 파랑 */
+}
+
+/* 4. 입력 폼 스타일 */
+input[type="text"], textarea {
+  width: 100%;                       /* 가로 전체 사용 */
+  padding: 8px;                      /* 안쪽 여백 */
+  margin-bottom: 10px;               /* 아래쪽 여백 */
+  border: 1px solid #ccc;            /* 연한 회색 테두리 */
+  border-radius: 4px;                /* 모서리 둥글게 */
+  font-size: 15px;
+  box-sizing: border-box;            /* 패딩 포함한 크기 계산 */
+  resize: vertical;                  /* textarea 세로 크기 조절 가능 */
+}
+
+/* 5. 게시글 목록 스타일 */
+#posts {
+  background: #fff;                  /* 흰색 배경 */
+  border-radius: 8px;                /* 모서리 둥글게 */
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05); /* 약한 그림자 */
+  padding: 20px;
+  margin-bottom: 30px;
+}
+
+/* 6. 게시글 아이템 스타일 */
+.post {
+  border-bottom: 1px solid #eee;     /* 아래쪽 연한 구분선 */
+  padding: 12px 0;
+}
+.post:last-child {
+  border-bottom: none;               /* 마지막 게시글은 구분선 없음 */
+}
+.post-title {
+  font-weight: bold;
+  font-size: 18px;
+  color: #34495e;
+}
+.post-content {
+  margin: 5px 0 0 10px;
+  color: #555;
+  font-size: 15px;
+}
+
+/* 7. 반응형 디자인: 모바일에서 폰트와 패딩 축소 */
+@media (max-width: 600px) {
+  body { font-size: 14px; }
+  #posts { padding: 10px; }
+  button { font-size: 14px; padding: 6px 10px; }
+  .post-title { font-size: 16px; }
+}
+
+/* 8. 링크 스타일 */
+a {
+  color: #2980b9;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+a:hover {
+  color: #e67e22;
+  text-decoration: underline;
+}
+
+/* 9. 애니메이션 예시 */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+#posts {
+  animation: fadeIn 0.7s;
 }
 ```
+
+### 각 예시별 설명
+
+- **body, h1, h2**: 전체 배경, 폰트, 제목 색상 및 여백 지정
+- **button**: 버튼의 색상, 크기, 애니메이션, 마우스 오버 효과
+- **input, textarea**: 입력창의 크기, 테두리, 패딩, 반응형 처리
+- **#posts, .post, .post-title, .post-content**: 게시글 목록과 각 게시글의 구분선, 배경, 그림자, 폰트 크기 등
+- **@media**: 화면이 좁아질 때(모바일) 폰트와 패딩을 줄여 가독성 유지
+- **a, a:hover**: 링크 색상과 마우스 오버 효과
+- **@keyframes, animation**: 게시글 목록이 부드럽게 나타나는 효과
+
+이처럼 CSS는 다양한 속성과 선택자를 조합해 웹페이지의 시각적 요소와 사용자 경험을 풍부하게 만듭니다.
 
 ---
 
 ## 9. 참고
 
 - [MDN CSS 문서](https://developer.mozilla.org/ko/docs/Web/CSS)
--
+- [W3Schools CSS 튜토리얼](https://www.w3schools.com/css/)
+- [CSS-Tricks](https://css-tricks.com/)
