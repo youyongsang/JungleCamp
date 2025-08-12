@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="assignment-type" content="type2" />
+    <title>Day_2!</title>
+
+    <script
+      src="https://code.jquery.com/jquery-3.5.1.min.js"
+      integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0="
+      crossorigin="anonymous"
+    ></script>
+
+    <style type="text/css">
+      div.question-box {
+        margin: 10px 0 20px 0;
+      }
+      .loading {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 8px;
+      }
+      .hidden {
+        display: none;
+      }
+      .spinner {
+        width: 16px;
+        height: 16px;
+        border: 2px solid #ccc;
+        border-top-color: #333;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+
+    <script>
+      function q1() {
+        $("#names-q1").empty();
+
+        const playerName = $("#player-name").val().trim(); //trim : 앞뒤 공백 제거
+        const platformRaw = $("#platform").val().trim().toLowerCase(); // 전부 소문자로 변환
+        const shardMap = {
+          steam: "steam",
+          스팀: "steam",
+          kakao: "kakao",
+          카카오: "kakao",
+          psn: "psn",
+          플스: "psn",
+          xbox: "xbox",
+          엑박: "xbox",
+        }; // 기타 헷갈리는 플랫폼 정리
+        const platform = shardMap[platformRaw] || platformRaw; // 예외 처리
+
+        const apiKey =
+          "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJqdGkiOiJlZDliMjc1MC01OTcyLTAxM2UtNWY3MS03NmNhZDljYTc2ODYiLCJpc3MiOiJnYW1lbG9ja2VyIiwiaWF0IjoxNzU0OTc5ODcwLCJwdWIiOiJibHVlaG9sZSIsInRpdGxlIjoicHViZyIsImFwcCI6Ii05NzUwYzczNy05MWU0LTQxZTctYjVkMy1lMWVmMDc2MGVkYWYifQ.wzPMT07l_4WHcC2lMVSIx9cVhMTOBys0GI54BB9gbmY";
+        if (!playerName || !platform) {
+          alert("닉네임과 플랫폼을 모두 입력하세요.");
+          return;
+        }
+        //유효 플랫폼 확인
+        const allowed = ["steam", "kakao", "psn", "xbox"];
+        if (!allowed.includes(platform)) {
+          $("#names-q1").append(`<li>지원하지 않는 플랫폼: ${platform}</li>`);
+          return;
+        }
+
+        const headers = {
+          Authorization: `Bearer ${apiKey}`,
+          Accept: "application/vnd.api+json",
+        };
+        $.ajax({
+          type: "GET",
+          url: `https://api.pubg.com/shards/${platform}/players`,
+          headers,
+          data: { "filter[playerNames]": playerName },
+          success: function (response) {
+            if (!response?.data?.length) {
+              $("#names-q1").append(
+                "<li>해당 플레이어를 찾을 수 없습니다.</li>"
+              );
+              return;
+            }
+
+            const player = response.data[0];
+            const name = player.attributes.name; //닉네임
+            const shardId = player.attributes.shardId; //플랫폼 정보
+            const playerId = player.id;
+
+            $.ajax({ //일치하는 닉네임을 통해서 플레이어의 시즌 통계 정보 획득.
+              type: "GET",
+              url: `https://api.pubg.com/shards/${platform}/players/${playerId}/seasons/lifetime`,
+              headers,
+              success: function (response) {
+                let stats = response?.data?.attributes?.gameModeStats || {};
+
+                // 합산 객체
+                let sum = { kills: 0, wins: 0, rounds: 0, time: 0 };
+
+                for (let mode of Object.keys(stats)) {
+                  let m = stats[mode];
+                  if (!m) continue;
+
+                  sum.kills += m.kills || 0;
+                  sum.wins += m.wins || 0;
+                  sum.rounds += m.roundsPlayed || 0; // 라운드 수
+                  sum.time += m.timeSurvived || 0; // 초
+                }
+
+                const deaths = Math.max(0, sum.rounds - sum.wins);
+                const kd = deaths ? sum.kills / deaths : sum.kills;
+                //deaths 존재 시 kill/death 그렇지 않을 시 kill만. 삼항연산자 사용
+                const avgSec = sum.rounds ? sum.time / sum.rounds : 0;
+                //초 단위로 변환 게임을 한 라운드 수로 나누기.
+                const avgText = formatMMSS(avgSec);
+
+                $("#names-q1").append(`<li>플레이어 이름: ${name}</li>`);
+                $("#names-q1").append(`<li>플랫폼: ${shardId}</li>`);
+                $("#names-q1").append(
+                  `<li>총 경기 수: ${sum.rounds.toLocaleString()}</li>`
+                );
+                $("#names-q1").append(
+                  `<li>승리 횟수: ${sum.wins.toLocaleString()}</li>`
+                );
+                $("#names-q1").append(
+                  `<li>킬/데스 비율(K/D): ${kd.toFixed(2)}</li>`
+                );
+                $("#names-q1").append(`<li>평균 생존 시간: ${avgText}</li>`);
+              },
+              error: function (xhr) {
+                showError(xhr, "lifetime 통계를 불러오지 못했습니다."); //기타 통계 통신 에러
+              },
+            });
+          },
+        });
+
+        function formatMMSS(sec) {
+          sec = Math.round(sec);
+          const m = Math.floor(sec / 60);
+          const s = sec % 60;
+          return `${m}분 ${String(s).padStart(2, "0")}초`; // 평균 생존 시간 산출 함수
+        }
+
+
+        function showError(xhr, prefix) { // 에러 표시 함수 
+          let detail = "";
+          try {
+            const j = xhr.responseJSON || JSON.parse(xhr.responseText);
+            if (j?.errors?.[0]) {
+              const e = j.errors[0];
+              detail = ` - ${e.title || ""} ${e.detail || ""}`;
+            }
+          } catch (e) {}
+          $("#names-q1").append(
+            `<li>${prefix}: ${xhr.status} ${xhr.statusText}${detail}</li>`
+          );
+          console.error(xhr);
+        }
+      }
+    </script>
+
+    <script>
+      // 페이지 로드 후 1회만 등록
+      $(function () {
+        $(document).ajaxStart(function () {
+          // 로딩 ON
+          $("#loading").removeClass("hidden");
+          // 버튼 잠금 + 텍스트 변경
+          const $btn = $("#search-button");
+          $btn.data("orig", $btn.text());
+          $btn.prop("disabled", true).text("검색 중…");
+        });
+
+        $(document).ajaxStop(function () {
+          // 로딩 OFF
+          $("#loading").addClass("hidden");
+          // 버튼 복구
+          const $btn = $("#search-button");
+          $btn.prop("disabled", false).text($btn.data("orig") || "검색");
+        });
+      });
+    </script>
+  </head>
+
+  <body>
+    <h1>Day_2 Challenge</h1>
+    <hr />
+
+    <div class="question-box">
+      <h1>배그 전적 검색 사이트</h1>
+      <h3>플레이어의 닉네임과 플랫폼(Steam, Kakao 등)을 입력해주세요.</h3>
+      <label><input type="text" id="player-name" placeholder="닉네임" /></label>
+      <label><input type="text" id="platform" placeholder="플랫폼" /></label>
+      <button id="search-button" onclick="q1()">검색</button>
+      <div id="loading" class="loading hidden">
+        <div class="spinner"></div>
+        <span>불러오는 중…</span>
+      </div>
+    </div>
+
+    <!-- 결과 출력 영역 -->
+    <ul id="names-q1"></ul>
+  </body>
+</html>
