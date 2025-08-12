@@ -12,14 +12,64 @@
     ></script>
 
     <style type="text/css">
-      div.question-box {
-        margin: 10px 0 20px 0;
+      body {
+        /* 배그 시작 화면 배경 이미지 (예시 URL, 필요시 교체) */
+        background: url('https://cdn.cloudflare.steamstatic.com/steam/apps/578080/page_bg_generated_v6b.jpg') no-repeat center center fixed;
+        background-size: cover;
+        min-height: 100vh;
+        margin: 0;
+      }
+      .center-top-box {
+        position: absolute;
+        top: 5%;
+        left: 50%;
+        transform: translate(-50%, 0);
+        background: rgba(255,255,255,0.92);
+        border-radius: 18px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+        padding: 32px 32px 24px 32px;
+        min-width: 340px;
+        max-width: 95vw;
+        z-index: 10;
+        text-align: center;
+      }
+      .center-top-box h1, .center-top-box h3 {
+        margin: 0 0 10px 0;
+      }
+      .center-top-box label {
+        display: block;
+        margin: 10px 0;
+      }
+      .center-top-box input[type="text"] {
+        padding: 7px 12px;
+        border-radius: 6px;
+        border: 1px solid #bbb;
+        margin-left: 5px;
+        font-size: 1rem;
+        width: 60%;
+        max-width: 200px;
+      }
+      .center-top-box button {
+        margin-top: 10px;
+        padding: 8px 24px;
+        border-radius: 6px;
+        border: none;
+        background: #222;
+        color: #fff;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+      .center-top-box button:disabled {
+        background: #888;
+        cursor: not-allowed;
       }
       .loading {
         display: flex;
         align-items: center;
         gap: 8px;
         margin-top: 8px;
+        justify-content: center;
       }
       .hidden {
         display: none;
@@ -37,33 +87,144 @@
           transform: rotate(360deg);
         }
       }
+      ul#names-q1 {
+        margin-top: 18px;
+        padding: 0;
+        list-style: none;
+        text-align: left;
+        font-size: 1rem;
+      }
+      ul#names-q1 li {
+        margin-bottom: 6px;
+        background: #f7f7f7;
+        border-radius: 6px;
+        padding: 7px 12px;
+      }
+      .bullet-btn {
+        margin-top: 10px;
+        padding: 8px 24px 8px 40px;
+        border-radius: 30px;
+        border: none;
+        background: #222;
+        color: #fff;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background 0.2s;
+        position: relative;
+        font-weight: bold;
+        outline: none;
+      }
+      .bullet-btn:disabled {
+        background: #888;
+        cursor: not-allowed;
+      }
+      .bullet-icon {
+        position: absolute;
+        left: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 18px;
+        height: 18px;
+        fill: #ffd700;
+        pointer-events: none;
+      }
+      .parachute {
+        position: fixed;
+        left: 0;
+        pointer-events: auto; /* 클릭 가능하게 반드시 추가 */
+        width: 120px;
+        height: 160px;
+        z-index: 2;
+        opacity: 0.85;
+        animation: fall linear forwards;
+      }
+      @keyframes fall {
+        to {
+          top: 110vh;
+          /* left는 JS에서 동적으로 변경 */
+        }
+      }
+      @media (max-width: 500px) {
+        .center-top-box {
+          padding: 16px 4vw 12px 4vw;
+          min-width: 0;
+        }
+        .center-top-box input[type="text"] {
+          width: 90%;
+          max-width: none;
+        }
+      }
+      #go-play-btn {
+        display: none;
+        position: fixed;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%) scale(0.5);
+        background: url('https://cdn.cloudflare.steamstatic.com/steam/apps/578080/header.jpg') center/cover no-repeat;
+        border: none;
+        border-radius: 24px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.35);
+        color: #fff;
+        font-size: 2.2rem;
+        font-weight: bold;
+        padding: 48px 80px;
+        cursor: pointer;
+        z-index: 2000;
+        transition: transform 0.5s cubic-bezier(.4,2,.6,1), opacity 0.5s;
+        opacity: 0.95;
+        outline: none;
+        text-shadow: 2px 2px 8px #222, 0 0 16px #000;
+        letter-spacing: 2px;
+      }
+      #go-play-btn.show {
+        display: block;
+        animation: growBtn 0.7s cubic-bezier(.4,2,.6,1) forwards;
+      }
+      @keyframes growBtn {
+        0% {
+          transform: translate(-50%, -50%) scale(0.5);
+          opacity: 0.2;
+        }
+        60% {
+          transform: translate(-50%, -50%) scale(1.15);
+          opacity: 1;
+        }
+        100% {
+          transform: translate(-50%, -50%) scale(1);
+          opacity: 1;
+        }
+      }
     </style>
 
     <script>
       function q1() {
         $("#names-q1").empty();
 
-        const playerName = $("#player-name").val().trim(); //trim : 앞뒤 공백 제거
-        const platformRaw = $("#platform").val().trim().toLowerCase(); // 전부 소문자로 변환
+        const playerName = $("#player-name").val().trim();
+        const platformRaw = $("#platform").val().trim().toLowerCase();
         const shardMap = {
           steam: "steam",
           스팀: "steam",
+          tmxla: "steam",
+          스침: "steam",
+          stim: "steam",
           kakao: "kakao",
           카카오: "kakao",
+          카카오톡: "kakao",
           psn: "psn",
           플스: "psn",
           xbox: "xbox",
           엑박: "xbox",
-        }; // 기타 헷갈리는 플랫폼 정리
-        const platform = shardMap[platformRaw] || platformRaw; // 예외 처리
+        };
+        const platform = shardMap[platformRaw] || platformRaw;
 
         const apiKey =
           "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJqdGkiOiJlZDliMjc1MC01OTcyLTAxM2UtNWY3MS03NmNhZDljYTc2ODYiLCJpc3MiOiJnYW1lbG9ja2VyIiwiaWF0IjoxNzU0OTc5ODcwLCJwdWIiOiJibHVlaG9sZSIsInRpdGxlIjoicHViZyIsImFwcCI6Ii05NzUwYzczNy05MWU0LTQxZTctYjVkMy1lMWVmMDc2MGVkYWYifQ.wzPMT07l_4WHcC2lMVSIx9cVhMTOBys0GI54BB9gbmY";
+        
         if (!playerName || !platform) {
           alert("닉네임과 플랫폼을 모두 입력하세요.");
           return;
         }
-        //유효 플랫폼 확인
         const allowed = ["steam", "kakao", "psn", "xbox"];
         if (!allowed.includes(platform)) {
           $("#names-q1").append(`<li>지원하지 않는 플랫폼: ${platform}</li>`);
@@ -80,44 +241,33 @@
           headers,
           data: { "filter[playerNames]": playerName },
           success: function (response) {
-            if (!response?.data?.length) {
-              $("#names-q1").append(
-                "<li>해당 플레이어를 찾을 수 없습니다.</li>"
-              );
-              return;
-            }
-
+            
             const player = response.data[0];
-            const name = player.attributes.name; //닉네임
-            const shardId = player.attributes.shardId; //플랫폼 정보
+            const name = player.attributes.name;
+            const shardId = player.attributes.shardId;
             const playerId = player.id;
 
-            $.ajax({ //일치하는 닉네임을 통해서 플레이어의 시즌 통계 정보 획득.
+            $.ajax({
               type: "GET",
               url: `https://api.pubg.com/shards/${platform}/players/${playerId}/seasons/lifetime`,
               headers,
               success: function (response) {
+                console.log(response);
                 let stats = response?.data?.attributes?.gameModeStats || {};
-
-                // 합산 객체
                 let sum = { kills: 0, wins: 0, rounds: 0, time: 0 };
 
                 for (let mode of Object.keys(stats)) {
                   let m = stats[mode];
                   if (!m) continue;
-
                   sum.kills += m.kills || 0;
                   sum.wins += m.wins || 0;
-                  sum.rounds += m.roundsPlayed || 0; // 라운드 수
-                  sum.time += m.timeSurvived || 0; // 초
+                  sum.rounds += m.roundsPlayed || 0;
+                  sum.time += m.timeSurvived || 0;
                 }
 
-                const deaths = Math.max(0, sum.rounds - sum.wins);
+                const deaths = sum.rounds - sum.wins;
                 const kd = deaths ? sum.kills / deaths : sum.kills;
-                //deaths 존재 시 kill/death 그렇지 않을 시 kill만. 삼항연산자 사용
                 const avgSec = sum.rounds ? sum.time / sum.rounds : 0;
-                //초 단위로 변환 게임을 한 라운드 수로 나누기.
-                const avgText = formatMMSS(avgSec);
 
                 $("#names-q1").append(`<li>플레이어 이름: ${name}</li>`);
                 $("#names-q1").append(`<li>플랫폼: ${shardId}</li>`);
@@ -130,56 +280,73 @@
                 $("#names-q1").append(
                   `<li>킬/데스 비율(K/D): ${kd.toFixed(2)}</li>`
                 );
-                $("#names-q1").append(`<li>평균 생존 시간: ${avgText}</li>`);
+                $("#names-q1").append(
+                  `<li>평균 생존 시간: ${avgTime(avgSec)}</li>`
+                );
               },
-              error: function (xhr) {
-                showError(xhr, "lifetime 통계를 불러오지 못했습니다."); //기타 통계 통신 에러
-              },
+              error: function() {
+                $("#loading").addClass("hidden");
+                const $btn = $("#search-button");
+                $btn.prop("disabled", false).text($btn.data("orig") || "검색");
+                $("#names-q1").append("<li>플레이어 정보를 불러오는 중 오류가 발생했습니다.</li>");
+              }
             });
+          },
+          error: function() {
+            $("#loading").addClass("hidden");
+            const $btn = $("#search-button");
+            $btn.prop("disabled", false).text($btn.data("orig") || "검색");
+            $("#names-q1").append("<li>플레이어 정보를 불러오는 중 오류가 발생했습니다.</li>");
+          },
+          statusCode: {
+            404: function (xhr) {
+              $("#names-q1").append(
+                "<li>해당 플레이어를 찾을 수 없습니다. (404에러)</li>"
+              );
+              $("#loading").addClass("hidden");
+              const $btn = $("#search-button");
+              $btn.prop("disabled", false).text($btn.data("orig") || "검색");
+            },
           },
         });
 
-        function formatMMSS(sec) {
-          sec = Math.round(sec);
-          const m = Math.floor(sec / 60);
-          const s = sec % 60;
-          return `${m}분 ${String(s).padStart(2, "0")}초`; // 평균 생존 시간 산출 함수
-        }
-
-
-        function showError(xhr, prefix) { // 에러 표시 함수 
-          let detail = "";
-          try {
-            const j = xhr.responseJSON || JSON.parse(xhr.responseText);
-            if (j?.errors?.[0]) {
-              const e = j.errors[0];
-              detail = ` - ${e.title || ""} ${e.detail || ""}`;
-            }
-          } catch (e) {}
-          $("#names-q1").append(
-            `<li>${prefix}: ${xhr.status} ${xhr.statusText}${detail}</li>`
-          );
-          console.error(xhr);
+        function avgTime(timeInSeconds) {
+          if (timeInSeconds > 3600) {
+            const hours = Math.floor(timeInSeconds / 3600);
+            const minutes = Math.floor((timeInSeconds % 3600) / 60);
+            const seconds = Math.floor(timeInSeconds % 60);
+            return `${hours}시간 ${String(minutes).padStart(2, "0")}분 ${String(
+              seconds
+            ).padStart(2, "0")}초`;
+          } else if (timeInSeconds > 60) {
+            const minutes = Math.floor(timeInSeconds / 60);
+            const seconds = Math.floor(timeInSeconds % 60);
+            return `${minutes}분 ${String(seconds).padStart(2, "0")}초`;
+          } else {
+            return `${Math.floor(timeInSeconds)}초`;
+          }
         }
       }
     </script>
 
     <script>
-      // 페이지 로드 후 1회만 등록
       $(function () {
         $(document).ajaxStart(function () {
-          // 로딩 ON
           $("#loading").removeClass("hidden");
-          // 버튼 잠금 + 텍스트 변경
           const $btn = $("#search-button");
           $btn.data("orig", $btn.text());
           $btn.prop("disabled", true).text("검색 중…");
         });
 
         $(document).ajaxStop(function () {
-          // 로딩 OFF
           $("#loading").addClass("hidden");
-          // 버튼 복구
+          const $btn = $("#search-button");
+          $btn.prop("disabled", false).text($btn.data("orig") || "검색");
+        });
+
+        // 에러 발생 시에도 로딩 OFF
+        $(document).ajaxError(function () {
+          $("#loading").addClass("hidden");
           const $btn = $("#search-button");
           $btn.prop("disabled", false).text($btn.data("orig") || "검색");
         });
@@ -188,22 +355,166 @@
   </head>
 
   <body>
-    <h1>Day_2 Challenge</h1>
-    <hr />
-
-    <div class="question-box">
+    <div id="parachute-area"></div>
+    <!-- 킬 카운트 표시 -->
+    <div id="kill-counter" style="
+      position:fixed;
+      top:24px;
+      right:36px;
+      z-index:1000;
+      font-size:2rem;
+      font-weight:bold;
+      color:#fff;
+      text-shadow:2px 2px 8px #222;
+      user-select:none;
+      pointer-events:none;
+      display:none; /* 처음에는 안 보이게 */
+    ">
+      KILL : <span id="kill-count">0</span>
+    </div>
+    <!-- 게임 하러 가기 버튼 -->
+    <button id="go-play-btn" onclick="window.open('https://pubg.com/', '_blank')">
+      게임 하러 가기
+    </button>
+    <div class="center-top-box">
       <h1>배그 전적 검색 사이트</h1>
       <h3>플레이어의 닉네임과 플랫폼(Steam, Kakao 등)을 입력해주세요.</h3>
       <label><input type="text" id="player-name" placeholder="닉네임" /></label>
       <label><input type="text" id="platform" placeholder="플랫폼" /></label>
-      <button id="search-button" onclick="q1()">검색</button>
+      <button id="search-button" class="bullet-btn" onclick="q1()">
+        <svg class="bullet-icon" viewBox="0 0 24 24">
+          <ellipse cx="7" cy="12" rx="6" ry="6" />
+          <rect x="13" y="9" width="7" height="6" rx="2" />
+          <rect x="20" y="10.5" width="2" height="3" rx="1" />
+        </svg>
+        검색
+      </button>
       <div id="loading" class="loading hidden">
         <div class="spinner"></div>
         <span>불러오는 중…</span>
       </div>
+      <!-- 결과 출력 영역 -->
+      <ul id="names-q1"></ul>
     </div>
 
-    <!-- 결과 출력 영역 -->
-    <ul id="names-q1"></ul>
+    <script>
+      // 낙하산 PNG 이미지 (현재 파일과 동일 폴더에 위치)
+      const parachuteImgUrl = "pngimg.com - parachute_PNG19426.png";
+      let killCount = 0;
+      let goPlayShown = false;
+
+      function showExplosion(x, y, size = 120) {
+        const explosion = document.createElement('img');
+        explosion.src = "ChatGPT Image 2025년 8월 12일 오후 08_19_01.png"; // 임의의 투명 배경 폭발 PNG
+        explosion.alt = "폭발";
+        explosion.style.position = "fixed";
+        explosion.style.left = (x - size / 2) + "px";
+        explosion.style.top = (y - size / 2) + "px";
+        explosion.style.width = size + "px";
+        explosion.style.height = size + "px";
+        explosion.style.pointerEvents = "none";
+        explosion.style.zIndex = 9999;
+        explosion.style.opacity = 0.95;
+        explosion.style.transition = "opacity 0.5s";
+        document.body.appendChild(explosion);
+        setTimeout(() => {
+          explosion.style.opacity = 0;
+          setTimeout(() => explosion.remove(), 500);
+        }, 350);
+      }
+
+      function spawnParachute() {
+        const area = document.getElementById('parachute-area');
+        const parachute = document.createElement('img');
+        parachute.className = 'parachute';
+        parachute.src = parachuteImgUrl;
+        parachute.alt = "낙하산";
+        parachute.style.pointerEvents = "auto"; // ★ 클릭 가능하게 명시
+
+        // 2~5배 랜덤 크기
+        const scale = 2 + Math.random() * 3; // 2~5
+        const baseWidth = 60, baseHeight = 80;
+        const width = baseWidth * scale;
+        const height = baseHeight * scale;
+        parachute.style.width = width + "px";
+        parachute.style.height = height + "px";
+        parachute.style.top = -height + "px";
+
+        // 시작 left 위치 (0 ~ 화면 너비 - width)
+        const startLeft = Math.random() * (window.innerWidth - width);
+        parachute.style.left = `${startLeft}px`;
+
+        // 랜덤 속도 (3~7초)
+        const duration = 3 + Math.random() * 4;
+        parachute.style.animationDuration = duration + 's';
+
+        // 바람 방향: -1(왼쪽), 0(직진), 1(오른쪽)
+        const wind = Math.random();
+        let windDir = 0;
+        if (wind < 0.33) windDir = -1;
+        else if (wind > 0.66) windDir = 1;
+        // 이동 거리: 100~400px 랜덤
+        const windDist = (100 + Math.random() * 300) * windDir;
+
+        // 애니메이션을 JS로 직접 제어 (transform 사용)
+        const anim = parachute.animate([
+          {
+            top: -height + "px",
+            left: startLeft + "px",
+            transform: "rotate(0deg)"
+          },
+          {
+            top: "110vh",
+            left: (startLeft + windDist) + "px",
+            transform: `rotate(${windDir * 20}deg)`
+          }
+        ], {
+          duration: duration * 1000,
+          easing: "linear",
+          fill: "forwards"
+        });
+
+        area.appendChild(parachute);
+
+        // 클릭 시 폭발 + 카운트 증가 + 낙하산 제거
+        parachute.addEventListener('click', function (e) {
+          e.stopPropagation();
+          e.preventDefault();
+          if (parachute._clicked) return;
+          parachute._clicked = true;
+          const rect = parachute.getBoundingClientRect();
+          const x = rect.left + rect.width / 2;
+          const y = rect.top + rect.height / 2;
+          showExplosion(x, y, Math.max(parachute.width, parachute.height) * 1.1);
+          parachute.remove();
+          killCount++;
+          // ★ 처음 클릭 시 kill-counter 보이게
+          const killCounter = document.getElementById('kill-counter');
+          if (killCounter.style.display === "none") {
+            killCounter.style.display = "block";
+          }
+          document.getElementById('kill-count').textContent = killCount;
+
+          // ★ 5킬 초과 시 게임 하러 가기 버튼 등장
+          if (killCount > 5 && !goPlayShown) {
+            goPlayShown = true;
+            const btn = document.getElementById('go-play-btn');
+            btn.classList.add('show');
+          }
+        });
+
+        // 애니메이션 끝나면 제거
+        setTimeout(() => {
+          parachute.remove();
+        }, duration * 1000 + 100);
+      }
+
+      // 0.5~1.2초마다 무작위로 낙하산 생성 (겹침 허용)
+      setInterval(() => {
+        if (Math.random() < 0.7) {
+          spawnParachute();
+        }
+      }, 500 + Math.random() * 700);
+    </script>
   </body>
 </html>
