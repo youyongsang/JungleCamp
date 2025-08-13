@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PUBG Style Login — Crawling Squad</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root { --card-w: 380px; --card-h: 520px; }
+    @media (max-width: 420px) { :root { --card-w: 94vw; --card-h: 560px; } }
+
+    body { overflow: hidden; }
+    /* 배경: 거칠고 어두운 톤 + 약한 보케 + 원형 세이프존 느낌 */
+    .bg-battleground {
+      background: radial-gradient(900px 500px at 80% -10%, rgba(250, 204, 21, .08), transparent 55%),
+                  radial-gradient(600px 600px at -10% 110%, rgba(59, 130, 246, .06), transparent 50%),
+                  linear-gradient(135deg, #0b0f14 0%, #0d1117 60%, #0b0f14 100%);
+    }
+
+    .login-card { position: relative; }
+    .login-card:before{ /* 러기드 경계 */
+      content:""; position:absolute; inset:-1px; border-radius: 1.25rem;
+      background: linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.02));
+      mask: radial-gradient(140% 120% at -10% -20%, transparent 30%, black 31%),
+            radial-gradient(120% 160% at 120% 120%, transparent 35%, black 36%);
+      -webkit-mask: radial-gradient(140% 120% at -10% -20%, transparent 30%, black 31%),
+                    radial-gradient(120% 160% at 120% 120%, transparent 35%, black 36%);
+      pointer-events: none;
+    }
+
+    /* 카드 상단 PUBG 색 포인트 바 */
+    .card-accent { height: 3px; background: linear-gradient(90deg, #f59e0b, #facc15, #f59e0b); opacity:.9; }
+
+    /* 크롤러 레이어(사람들이 기어다님) */
+    .crawler-layer { position:absolute; inset:0; pointer-events:none; z-index: 15; }
+    .crawler { position:absolute; width: 42px; height: 42px; transform: translate(-50%, -50%); filter: drop-shadow(0 4px 10px rgba(0,0,0,.35)); will-change: transform; }
+
+    /* 기본: SVG 실루엣 병사(헬멧) */
+    .crawler .human { position:absolute; inset:0; }
+    .crawler .human svg { width:100%; height:100%; }
+    .limb { transform-box: fill-box; transform-origin: center; }
+    .armL { animation: arm-swing 0.7s infinite ease-in-out alternate; }
+    .armR { animation: arm-swing 0.7s infinite ease-in-out alternate-reverse; }
+    .legL { animation: leg-swing 0.7s infinite ease-in-out alternate; }
+    .legR { animation: leg-swing 0.7s infinite ease-in-out alternate-reverse; }
+    .torso { animation: torso-bob 0.7s infinite ease-in-out; }
+
+    @keyframes arm-swing { from { transform: rotate(-36deg); } to { transform: rotate(26deg); } }
+    @keyframes leg-swing { from { transform: rotate(22deg); } to { transform: rotate(-18deg); } }
+    @keyframes torso-bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(1.2px); } }
+
+    /* 외부 PNG 프레임 사용 시 */
+    .crawler[data-sprite] .human { background: none; }
+
+    /* 토글 버튼 스타일 보조 */
+    .btn-ghost { border: 1px solid rgba(255,255,255,.15); background: rgba(255,255,255,.04); }
+    .btn-ghost:hover { background: rgba(255,255,255,.08); }
+  </style>
+</head>
+<body class="min-h-screen bg-battleground flex items-center justify-center p-6">
+  <div id="login-card" class="login-card relative w-[var(--card-w)] h-[var(--card-h)] rounded-2xl bg-white/10 backdrop-blur-xl border border-white/15 shadow-2xl overflow-hidden">
+    <div class="card-accent"></div>
+
+    <!-- Crawling squad layer -->
+    <div class="crawler-layer" id="crawler-layer" aria-hidden="true"></div>
+
+    <!-- 카드 장식: 보급 상자 실루엣 & 실루엣 지형 -->
+    <div class="absolute -bottom-10 -left-8 w-36 h-36 rotate-12 opacity-10">
+      <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="text-amber-300">
+        <rect x="10" y="40" width="80" height="40" rx="4"/>
+        <rect x="18" y="28" width="64" height="18" rx="3"/>
+        <path d="M18 45h64v6H18zM18 55h64v6H18z"/>
+      </svg>
+    </div>
+
+    <!-- 로그인 폼 -->
+    <div class="relative z-20 p-8 sm:p-10 text-slate-100">
+      <div class="flex items-center gap-3 mb-6">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" class="opacity-90"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="12" cy="7" r="3" stroke="currentColor" stroke-width="1.5"/></svg>
+        <h1 class="text-2xl font-bold tracking-tight">PUBG 로그인</h1>
+        <span class="ml-auto text-xs px-2 py-1 rounded-full bg-white/10 border border-white/10">demo</span>
+      </div>
+      <form class="space-y-4" autocomplete="off">
+        <label class="block">
+          <span class="text-sm text-slate-200">이메일</span>
+          <input class="mt-1 w-full rounded-xl bg-white/10 border border-white/15 px-4 py-3 outline-none focus:ring-2 focus:ring-amber-400/50 placeholder:text-slate-400" placeholder="you@example.com" type="email" required />
+        </label>
+        <label class="block">
+          <span class="text-sm text-slate-200">비밀번호</span>
+          <input class="mt-1 w-full rounded-xl bg-white/10 border border-white/15 px-4 py-3 outline-none focus:ring-2 focus:ring-amber-400/50 placeholder:text-slate-400" placeholder="••••••••" type="password" required />
+        </label>
+
+        <div class="flex items-center justify-between text-sm">
+          <label class="inline-flex items-center gap-2 select-none"><input type="checkbox" class="accent-amber-400/80"/> 로그인 상태 유지</label>
+          <a href="#" class="text-amber-300 hover:text-amber-200">비밀번호를 잊으셨나요?</a>
+        </div>
+        <button class="w-full py-3 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-400 hover:to-yellow-300 font-semibold shadow-lg shadow-amber-900/40">로그인</button>
+      </form>
+
+      <div class="mt-6 grid grid-cols-2 gap-3 text-sm">
+        <button class="btn-ghost px-3 py-2 rounded-xl">Steam으로 계속</button>
+        <button class="btn-ghost px-3 py-2 rounded-xl">Kakao로 계속</button>
+      </div>
+
+      <div class="mt-6 flex items-center justify-center gap-2 text-xs text-slate-300">
+        <button id="toggleCritters" class="px-3 py-1 rounded-lg btn-ghost">분대 토글</button>
+        <button id="densityDown" class="px-3 py-1 rounded-lg btn-ghost">-</button>
+        <span id="densityLabel" class="tabular-nums">6</span>
+        <button id="densityUp" class="px-3 py-1 rounded-lg btn-ghost">+</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // === PUBG 느낌: 기어가는 분대 ===
+    const CONFIG = {
+      count: 6,            // 기본 병사 수
+      size: 38,            // 크기(px)
+      speedMin: 40,        // px/s
+      speedMax: 88,
+      edgeOffset: -6,      // 경계 안쪽으로 살짝
+      useSprites: false,   // true로 하고 아래 frames에 PNG 경로 넣으면 프레임 애니메이션 적용
+      // spriteFrames: [ ['frame1.png','frame2.png',...], ['다른병사1','다른병사2',...] ]
+      spriteFrames: [],
+      frameInterval: 120   // ms, 스프라이트 프레임 전환 속도
+    };
+
+    const layer = document.getElementById('crawler-layer');
+    const card  = document.getElementById('login-card');
+    const densityLabel = document.getElementById('densityLabel');
+
+    let rafId = null, running = true, crawlers = [];
+
+    // 입력 포커스 시 일시정지(산만함 방지)
+    card.addEventListener('focusin', () => { running = false; cancelAnimationFrame(rafId); });
+    card.addEventListener('focusout', () => { if (!rafId) { running = true; tick(performance.now()); } });
+
+    // 모션 줄이기 선호
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { CONFIG.speedMin = 0; CONFIG.speedMax = 0; }
+
+    class Soldier {
+      constructor(opts){
+        this.t = Math.random();
+        this.clockwise = Math.random() > 0.5;
+        this.speed = opts.speed;
+        this.size = opts.size;
+        this.w = 0; this.h = 0; this.perimeter = 0;
+        this.frames = opts.frames || null; // 배열이면 프레임 애니메
+        this.frameIdx = 0; this.frameTimer = 0;
+
+        this.el = document.createElement('div');
+        this.el.className = 'crawler';
+        this.el.style.width = this.el.style.height = this.size + 'px';
+
+        const inner = document.createElement('div');
+        inner.className = 'human';
+        inner.innerHTML = this._svgHuman();
+        this.el.appendChild(inner);
+
+        if (CONFIG.useSprites && this.frames && this.frames.length){
+          this.el.dataset.sprite = '1';
+          inner.innerHTML = '';
+          inner.style.backgroundImage = `url("${this.frames[0]}")`;
+          inner.style.backgroundSize = 'contain';
+          inner.style.backgroundRepeat = 'no-repeat';
+          inner.style.backgroundPosition = 'center';
+        }
+
+        layer.appendChild(this.el);
+      }
+      _svgHuman(){
+        return `
+          <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <!-- 헬멧/머리 -->
+            <path d="M26 16a10 10 0 0 1 12 0l4 3-2 5H24l-2-5 4-3z" fill="#0f172a"/>
+            <!-- 몸통 -->
+            <rect class="torso" x="29" y="24" width="6" height="14" rx="2" fill="#1f2937"/>
+            <!-- 팔 -->
+            <rect class="limb armL" x="18" y="27" width="14" height="4" rx="2" fill="#334155" transform="rotate(-30 25 29)"/>
+            <rect class="limb armR" x="32" y="26" width="14" height="4" rx="2" fill="#334155" transform="rotate(25 39 28)"/>
+            <!-- 다리(낮은 포복) -->
+            <rect class="limb legL" x="22" y="38" width="16" height="4" rx="2" fill="#334155" transform="rotate(12 30 40)"/>
+            <rect class="limb legR" x="34" y="42" width="16" height="4" rx="2" fill="#334155" transform="rotate(-12 42 44)"/>
+          </svg>`
+      }
+      updatePath(){ this.w = card.clientWidth; this.h = card.clientHeight; this.perimeter = 2 * (this.w + this.h); }
+      step(dt){
+        if (!this.perimeter) this.updatePath();
+        // 경로 진행
+        const dPix = this.speed * dt * (this.clockwise ? 1 : -1);
+        let d = (this.t * this.perimeter + dPix) % this.perimeter; if (d < 0) d += this.perimeter; this.t = d / this.perimeter;
+        const p = this._pointOnRect(d);
+        this.el.style.transform = `translate(${p.x}px, ${p.y}px) rotate(${p.angle}deg)`;
+        // 스프라이트 프레임 전환
+        if (CONFIG.useSprites && this.frames && this.frames.length){
+          this.frameTimer += dt * 1000;
+          if (this.frameTimer >= CONFIG.frameInterval){
+            this.frameTimer = 0;
+            this.frameIdx = (this.frameIdx + 1) % this.frames.length;
+            this.el.firstChild.style.backgroundImage = `url("${this.frames[this.frameIdx]}")`;
+          }
+        }
+      }
+      _pointOnRect(d){
+        const eo = CONFIG.edgeOffset, half = this.size/2; const w = this.w, h = this.h;
+        const left = half - eo, top = half - eo, right = w - half + eo, bottom = h - half + eo;
+        const topLen = w, rightLen = h, bottomLen = w, leftLen = h;
+        if (d <= topLen) { return { x: left + d, y: top, angle: 0 } }
+        else if (d <= topLen + rightLen) { return { x: right, y: top + (d - topLen), angle: 90 } }
+        else if (d <= topLen + rightLen + bottomLen) { return { x: right - (d - topLen - rightLen), y: bottom, angle: 180 } }
+        else { return { x: left, y: bottom - (d - topLen - rightLen - bottomLen), angle: 270 } }
+      }
+    }
+
+    function spawn(n){
+      for (let i = 0; i < n; i++){
+        const speed = rand(CONFIG.speedMin, CONFIG.speedMax);
+        const size  = CONFIG.size + Math.round(rand(-4, 8));
+        const frames = (CONFIG.useSprites && CONFIG.spriteFrames.length) ? pick(CONFIG.spriteFrames) : null;
+        const s = new Soldier({ speed, size, frames }); s.t = Math.random(); crawlers.push(s);
+      }
+      updateAllPaths();
+    }
+
+    function updateAllPaths(){ crawlers.forEach(s => s.updatePath()); }
+
+    function tick(tNow){
+      if (!running) { rafId = null; return; }
+      if (!tick.last) tick.last = tNow; const dt = Math.min(0.05, (tNow - tick.last) / 1000); tick.last = tNow;
+      crawlers.forEach(s => s.step(dt));
+      rafId = requestAnimationFrame(tick);
+    }
+
+    function rand(a,b){ return a + Math.random() * (b - a); }
+    function pick(arr){ return arr[(Math.random() * arr.length) | 0]; }
+
+    // 반응형
+    new ResizeObserver(updateAllPaths).observe(card);
+
+    // UI: 토글 & 밀도
+    document.getElementById('toggleCritters').addEventListener('click', () => {
+      running = !running; if (running && !rafId) tick(performance.now()); if (!running) { cancelAnimationFrame(rafId); rafId = null; }
+    });
+    document.getElementById('densityUp').addEventListener('click', () => { spawn(1); densityLabel.textContent = crawlers.length; });
+    document.getElementById('densityDown').addEventListener('click', () => { if (crawlers.length>0){ layer.lastElementChild?.remove(); crawlers.pop(); densityLabel.textContent = crawlers.length; } });
+
+    function boot(){ spawn(CONFIG.count); running = true; tick.last = 0; tick(performance.now()); densityLabel.textContent = CONFIG.count; }
+    boot();
+  </script>
+</body>
+</html>
