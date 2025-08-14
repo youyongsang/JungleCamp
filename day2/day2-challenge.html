@@ -12,6 +12,12 @@
     ></script>
 
     <style type="text/css">
+      @font-face {
+        font-family: "HeadlinerNo45";
+        src: url("HeadlinerNo.45 DEMO.ttf") format("truetype");
+        font-weight: normal;
+        font-style: normal;
+      }
       body {
         /* 배그 시작 화면 배경 이미지 (예시 URL, 필요시 교체) */
         background: url("https://cdn.cloudflare.steamstatic.com/steam/apps/578080/page_bg_generated_v6b.jpg")
@@ -25,75 +31,102 @@
         left: 50%;
         top: 5%;
         transform: translate(-50%, 0);
-        background: rgba(255, 255, 255, 0.96);
-        border-radius: 20px;
-        box-shadow: 0 12px 36px rgba(0, 0, 0, 0.2);
-        padding: 32px clamp(20px, 5vw, 48px);
-        width: min(90vw, 480px);
+        background: radial-gradient(
+            circle at 50% 50%,
+            rgba(60, 70, 50, 0.97) 60%,
+            rgba(30, 36, 28, 0.98) 100%
+          ),
+          url("https://www.transparenttextures.com/patterns/rough-cloth.png");
+        border-radius: 50%;
+        box-shadow: 0 0 0 14px rgba(60, 80, 40, 0.22),
+          0 0 80px 16px rgba(20, 30, 20, 0.55), 0 0 0 2px #2d2d2d inset,
+          0 0 0 4px #ffd70044 inset;
+        padding: 48px 32px 40px 32px;
+        width: 420px;
+        height: 420px;
+        max-width: 90vw;
+        max-height: 90vw;
         z-index: 10;
         text-align: center;
-        backdrop-filter: blur(8px);
+        backdrop-filter: blur(10px) brightness(0.92);
         transition: transform 0.3s ease, box-shadow 0.3s ease;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        position: absolute;
       }
 
       .center-top-box:hover {
-        box-shadow: 0 16px 48px rgba(0, 0, 0, 0.3);
-        transform: translate(-50%, -2px);
+        box-shadow: 0 0 0 18px #ffd700cc, 0 0 120px 24px rgba(0, 0, 0, 0.7);
+        transform: translate(-50%, -4px) scale(1.03);
       }
 
       .center-top-box h1,
       .center-top-box h3 {
         margin: 0 0 14px 0;
         font-weight: 700;
-        color: #222;
+        color: #ffd700;
+        text-shadow: 0 2px 8px #222, 0 0 16px #333;
+        letter-spacing: 1.5px;
       }
 
       .center-top-box label {
         display: block;
         margin: 16px 0 8px;
-        font-size: 0.95rem;
-        color: #444;
+        font-size: 1.05rem;
+        color: #c2b280;
         text-align: left;
+        font-weight: 500;
+        text-shadow: 0 1px 4px #222;
+        font-family: "HeadlinerNo45", sans-serif;
       }
 
       .center-top-box input[type="text"] {
         padding: 10px 14px;
-        border-radius: 10px;
-        border: 1px solid #ccc;
-        font-size: 1rem;
+        border-radius: 16px;
+        border: 1.5px solid #5a5a3a;
+        font-size: 2.3rem;
         width: 100%;
         max-width: 100%;
         box-sizing: border-box;
+        background: rgba(40, 44, 32, 0.88);
+        color: #ffd700;
         transition: border-color 0.2s, box-shadow 0.2s;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.18);
+        font-family: "HeadlinerNo45", sans-serif;
       }
 
       .center-top-box input[type="text"]:focus {
-        border-color: #0078d4;
-        box-shadow: 0 0 0 2px rgba(0, 120, 212, 0.2);
+        border-color: #ffd700;
+        box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.28);
         outline: none;
       }
 
       .center-top-box button {
         margin-top: 20px;
         padding: 12px 24px;
-        border-radius: 12px;
+        border-radius: 24px;
         border: none;
-        background: linear-gradient(135deg, #222, #444);
-        color: #fff;
-        font-size: 1rem;
-        font-weight: 600;
+        background: linear-gradient(135deg, #3a3a2a, #5a5a3a 80%);
+        color: #ffd700;
+        font-size: 1.08rem;
+        font-weight: 700;
         cursor: pointer;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.18);
         transition: background 0.3s ease, transform 0.2s ease;
       }
 
       .center-top-box button:hover:not(:disabled) {
-        background: linear-gradient(135deg, #000, #333);
-        transform: translateY(-2px);
+        background: linear-gradient(135deg, #2d2d1d, #ffd700 80%);
+        color: #fff176;
+        transform: translateY(-2px) scale(1.05);
       }
 
       .center-top-box button:disabled {
-        background: #bbb;
-        color: #eee;
+        background: #5a5a3a;
+        color: #888;
         cursor: not-allowed;
       }
 
@@ -132,6 +165,8 @@
         background: #f7f7f7;
         border-radius: 6px;
         padding: 7px 12px;
+        font-family: "HeadlinerNo45", sans-serif;
+        font-size: 1.5rem;
       }
       .bullet-btn {
         margin-top: 10px;
@@ -363,12 +398,12 @@
                 const avgSec = sum.rounds ? sum.time / sum.rounds : 0;
 
                 const resultList = [
-                  `플레이어 이름: ${name}`,
-                  `플랫폼: ${shardId}`,
-                  `총 경기 수: ${sum.rounds.toLocaleString()}`,
-                  `승리 횟수: ${sum.wins.toLocaleString()}`,
-                  `킬/데스 비율(K/D): ${kd.toFixed(2)}`,
-                  `평균 생존 시간: ${avgTime(avgSec)}`,
+                  `Player Name: ${name}`,
+                  `Platform: ${shardId}`,
+                  `Total Matches: ${sum.rounds.toLocaleString()}`,
+                  `Wins: ${sum.wins.toLocaleString()}`,
+                  `KD Ratio: ${kd.toFixed(2)}`,
+                  `Avg. Survival Time: ${avgTime(avgSec)}`,
                 ];
                 showListAnimated(resultList);
               },
@@ -425,12 +460,15 @@
           let delay = 0;
           const bulletImgUrl = "pngegg.png"; // 총알 이미지 파일명(실제 파일명으로 교체)
 
-          // div 박스의 실제 넓이 계산
-          const boxWidth = $(".center-top-box").outerWidth() || 400;
+          // 기존 box 크기
+          const $box = $(".center-top-box");
+          const baseWidth = 420;
+          const baseHeight = 420;
+          const growStep = 48; // 목록 하나당 증가 너비/높이
 
           list.forEach((html, idx) => {
             setTimeout(() => {
-              // 총알 이미지와 텍스트를 감싼 div 생성
+              // li 생성 및 초기 스타일
               const $li = $("<li>").css({
                 display: "flex",
                 alignItems: "center",
@@ -440,31 +478,57 @@
                 padding: "0",
                 marginBottom: "12px",
                 opacity: 0,
-                // 우측 화면 밖에서 시작, 박스 넓이만큼 이동
-                transform: `translateX(${boxWidth}px)`,
+                position: "relative",
+                left: 0,
+                top: 0,
+                transform: "scale(0.7)",
                 transition:
                   "opacity 0.5s, transform 0.7s cubic-bezier(.4,2,.6,1)",
               });
+              // 총알 이미지와 텍스트를 가로로 나란히 배치
               const $img = $("<img>")
                 .attr("src", bulletImgUrl)
                 .attr("alt", "총알")
                 .css({
-                  width: "32px",
-                  height: "32px",
+                  width: "48px",
+                  height: "48px",
                   flexShrink: 0,
+                  position: "relative",
+                  left: "60px",
+                  opacity: 0,
+                  transition:
+                    "left 0.25s cubic-bezier(.7,2,.6,1), opacity 0.3s",
+                  zIndex: 2,
                 });
               const $text = $("<span>").html(html).css({
-                fontSize: "1rem",
                 color: "#222",
                 fontWeight: "bold",
+                position: "relative",
+                left: "60px",
+                opacity: 0,
+                transition: "left 0.35s cubic-bezier(.7,2,.6,1), opacity 0.3s",
+                zIndex: 1,
               });
               $li.append($img).append($text);
               $ul.append($li);
-              $(".center-top-box").css("height", "auto");
+              // li fade-in
               setTimeout(() => {
-                $li.css({
-                  opacity: 1,
-                  transform: "translateX(0)", // 박스 넓이만큼 좌로 이동
+                $li.css({ opacity: 1, transform: "scale(1)" });
+                // 총알 이동 (우→좌)
+                setTimeout(() => {
+                  $img.css({ left: "-32px", opacity: 1 });
+                  // 총알 멈추고 텍스트가 뒤따라 이동
+                  setTimeout(() => {
+                    $text.css({ left: "-25px", opacity: 1 });
+                  }, 180);
+                }, 80);
+                // 박스 크기 동적 증가 (너비, 높이 모두)
+                $box.css({
+                  width: baseWidth + growStep * (idx + 1),
+                  height: baseHeight + growStep * (idx + 1),
+                  maxWidth: baseWidth + growStep * list.length,
+                  maxHeight: baseHeight + growStep * list.length,
+                  transition: "width 0.5s, height 0.5s",
                 });
               }, 50);
             }, delay);
@@ -561,7 +625,9 @@
       id="go-play-btn"
       onclick="window.open('https://pubg.com/', '_blank')"
     >
-      게임 하러 가기
+      <span
+        style="font-family: 'HeadlinerNo45', sans-serif;"
+      >Play PUBG</span>
     </button>
 
     <!-- 전적검색하기 시작 버튼 (화면 중앙, 배그 배경) -->
@@ -586,23 +652,28 @@
         outline: none;
         text-shadow: 2px 2px 8px #222, 0 0 16px #000;
         letter-spacing: 2px;
+        font-family: 'HeadlinerNo45', sans-serif;
       "
     >
-      전적검색하기
+      Search PUBG Stats
     </button>
 
     <!-- 전적검색하기 입력 박스 (처음에는 숨김) -->
-    <div class="center-top-box" style="display: none; position: relative;">
-      <!-- 크롤러 레이어 추가 -->
-      <div class="crawler-layer" id="crawler-layer" aria-hidden="true"
-        style="position:absolute; inset:0; pointer-events:none; z-index: 15;"></div>
+    <div class="center-top-box" style="display: none; position: relative">
       <img
         src="pngwing.com.png"
         alt="PUBG 로고"
-        style="width: 360px; max-width: 120vw; display: block; margin: 0 auto 12px auto;"
+        style="
+          width: 360px;
+          max-width: 120vw;
+          display: block;
+          margin: 0 auto 12px auto;
+        "
       />
-      <label><input type="text" id="player-name" placeholder="닉네임" /></label>
-      <label><input type="text" id="platform" placeholder="플랫폼" /></label>
+      <label
+        ><input type="text" id="player-name" placeholder="Player Name"
+      /></label>
+      <label><input type="text" id="platform" placeholder="Platform" /></label>
       <!-- 검색 버튼을 후라이팬 이미지로 변경 -->
       <button
         id="search-button"
@@ -625,7 +696,9 @@
           alt="로딩(발사하는 총)"
           style="width: 32px; height: 32px; vertical-align: middle"
         />
-        <span>불러오는 중…</span>
+        <span
+          style="font-family: 'HeadlinerNo45', sans-serif"
+        >LOADING…</span>
       </div>
       <!-- 결과 출력 영역 -->
       <ul id="names-q1"></ul>
@@ -936,92 +1009,6 @@
             bgm.play();
           }
         });
-      });
-    </script>
-    <script>
-      $(function () {
-        // 크롤러 효과: center-top-box 내부에서 병사들이 기어다님
-        const CONFIG = {
-          count: 5,
-          size: 38,
-          speedMin: 30,
-          speedMax: 60,
-          edgeOffset: -6
-        };
-        const $box = $(".center-top-box");
-        const layer = document.getElementById("crawler-layer");
-
-        class Soldier {
-          constructor(opts){
-            this.t = Math.random();
-            this.clockwise = Math.random() > 0.5;
-            this.speed = opts.speed;
-            this.size = opts.size;
-            this.w = 0; this.h = 0; this.perimeter = 0;
-            this.el = document.createElement('div');
-            this.el.className = 'crawler';
-            this.el.style.width = this.el.style.height = this.size + 'px';
-            const inner = document.createElement('div');
-            inner.className = 'human';
-            inner.innerHTML = this._svgHuman();
-            this.el.appendChild(inner);
-            layer.appendChild(this.el);
-          }
-          _svgHuman(){
-            return `
-              <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                <path d="M26 16a10 10 0 0 1 12 0l4 3-2 5H24l-2-5 4-3z" fill="#0f172a"/>
-                <rect class="torso" x="29" y="24" width="6" height="14" rx="2" fill="#1f2937"/>
-                <rect class="limb armL" x="18" y="27" width="14" height="4" rx="2" fill="#334155" transform="rotate(-30 25 29)"/>
-                <rect class="limb armR" x="32" y="26" width="14" height="4" rx="2" fill="#334155" transform="rotate(25 39 28)"/>
-                <rect class="limb legL" x="22" y="38" width="16" height="4" rx="2" fill="#334155" transform="rotate(12 30 40)"/>
-                <rect class="limb legR" x="34" y="42" width="16" height="4" rx="2" fill="#334155" transform="rotate(-12 42 44)"/>
-              </svg>`;
-          }
-          updatePath(){
-            this.w = $box.width();
-            this.h = $box.height();
-            this.perimeter = 2 * (this.w + this.h);
-          }
-          step(dt){
-            if (!this.perimeter) this.updatePath();
-            const dPix = this.speed * dt * (this.clockwise ? 1 : -1);
-            let d = (this.t * this.perimeter + dPix) % this.perimeter; if (d < 0) d += this.perimeter; this.t = d / this.perimeter;
-            const p = this._pointOnRect(d);
-            this.el.style.transform = `translate(${p.x}px, ${p.y}px) rotate(${p.angle}deg)`;
-          }
-          _pointOnRect(d){
-            const eo = CONFIG.edgeOffset, half = this.size/2;
-            const w = this.w, h = this.h;
-            const left = half - eo, top = half - eo, right = w - half + eo, bottom = h - half + eo;
-            const topLen = w, rightLen = h, bottomLen = w, leftLen = h;
-            if (d <= topLen) { return { x: left + d, y: top, angle: 0 } }
-            else if (d <= topLen + rightLen) { return { x: right, y: top + (d - topLen), angle: 90 } }
-            else if (d <= topLen + rightLen + bottomLen) { return { x: right - (d - topLen - rightLen), y: bottom, angle: 180 } }
-            else { return { x: left, y: bottom - (d - topLen - rightLen - bottomLen), angle: 270 } }
-          }
-        }
-
-        let rafId = null, running = true, crawlers = [];
-        function spawn(n){
-          for (let i = 0; i < n; i++){
-            const speed = CONFIG.speedMin + Math.random() * (CONFIG.speedMax - CONFIG.speedMin);
-            const size  = CONFIG.size + Math.round(Math.random() * 8);
-            const s = new Soldier({ speed, size }); s.t = Math.random(); crawlers.push(s);
-          }
-          updateAllPaths();
-        }
-        function updateAllPaths(){ crawlers.forEach(s => s.updatePath()); }
-        function tick(tNow){
-          if (!running) { rafId = null; return; }
-          if (!tick.last) tick.last = tNow; const dt = Math.min(0.05, (tNow - tick.last) / 1000); tick.last = tNow;
-          crawlers.forEach(s => s.step(dt));
-          rafId = requestAnimationFrame(tick);
-        }
-        // 반응형
-        new ResizeObserver(updateAllPaths).observe($box[0]);
-        // 크롤러 분대 생성 및 애니메이션 시작
-        spawn(CONFIG.count); running = true; tick.last = 0; tick(performance.now());
       });
     </script>
   </body>
