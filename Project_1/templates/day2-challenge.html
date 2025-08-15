@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Day_2!</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="{{ url_for('static', filename='main.js') }}" defer></script>
+  </head>
+  <body>
+    <audio
+      id="bgm"
+      src="{{ url_for('static', filename='Alan Walker, Sabrina Carpenter & Farruko  - On My Way.mp3') }}"
+      loop
+      hidden
+    ></audio>
+    <div id="parachute-area"></div>
+    <div
+      id="kill-counter"
+      style="
+        position: fixed;
+        top: 24px;
+        right: 36px;
+        z-index: 1000;
+        font-size: 2rem;
+        font-weight: bold;
+        color: #fff;
+        text-shadow: 2px 2px 8px #222;
+        user-select: none;
+        pointer-events: none;
+        display: none;
+      "
+    >
+      KILL : <span id="kill-count">0</span>
+    </div>
+    <button
+      id="go-play-btn"
+      onclick="window.open('https://pubg.com/', '_blank')"
+    >
+      Play PUBG
+    </button>
+    <button id="start-search-btn">Search PUBG Stats</button>
+    <div class="center-top-box" style="display: none; position: relative">
+      <img src="{{ url_for('static', filename='image/pubg-logo.png') }}" alt="PUBG 로고" class="pubg-logo" />
+      <label>
+        <input type="text" id="player-name" placeholder="Player Name" />
+      </label>
+      <label>
+        <input type="text" id="platform" placeholder="Platform" />
+      </label>
+      <button
+        id="search-button"
+        class="bullet-btn"
+        style="padding: 0 0 0 0; background: none; border: none"
+      >
+        <img
+          id="pan-img"
+          src="{{ url_for('static', filename='image/pan.png') }}"
+          alt="검색(후라이팬)"
+          class="pan-img"
+        />
+      </button>
+      <div id="loading" class="loading hidden">
+        <img
+          id="pan-loading-img"
+          src="{{ url_for('static', filename='image/gun-loading.png') }}"
+          alt="로딩(발사하는 총)"
+          class="pan-loading-img"
+        />
+        <span class="loading-text">LOADING…</span>
+      </div>
+      <ul id="names-q1"></ul>
+    </div>
+  </body>
+</html>
