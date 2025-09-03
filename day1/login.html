@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <!-- 반응형 웹을 위해 뷰포트 설정 -->
+    <title>크래프톤 정글 | HTML 기초</title>
+    <style>
+      .wrap {
+        width: 300px;
+        margin: 10px auto;
+        text-align: center;
+
+      }
+      .title {
+        width: 300px;
+        height: 200px;
+        background-image: 
+        url("https://www.ancient-origins.net/sites/default/files/field/image/Agesilaus-II-cover.jpg");
+        background-position: center;
+        background-size: cover;
+
+        border-radius: 10px;
+        padding-top: 40px;
+
+        color: white;
+        text-align: center;
+      }
+    </style>
+    
+</head>
+<body>
+    <div class="wrap">
+        <!--
+          .wrap: 로그인 전체 박스를 감싸는 컨테이너
+          - width: 300px로 고정된 너비
+          - margin: 10px auto로 위아래 10px, 좌우는 자동(가운데 정렬)
+          - 내부에 제목, 입력창, 버튼 등이 배치됨
+        -->
+        <div class = "title">
+            <h1>로그인 페이지</h1>
+            <h4>아이디, 비밀번호를 입력해주세요</h4>
+        </div>
+        <div>
+            <p>ID: <input type="text" /></p>
+            <p>PW: <input type="password" /></p>
+        </div>
+        <button>로그인</button>
+    </div>
+</body>
+</html>

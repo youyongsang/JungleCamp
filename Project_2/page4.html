@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>오락실 상세 정보</title>
+    <!-- Google Fonts: 'Jua' (귀여운 한글 폰트) -->
+    <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="page4.css">
+</head>
+
+<body>
+    <!-- 우측 상단 뒤로가기 버튼 추가 -->
+    <div class="back-btn-wrap">
+        <button class="back-btn" id="backBtn">← 뒤로가기</button>
+    </div>
+    <div class="main-card">
+        <div class="location-row">
+            <div class="store-name-wrap">
+                <span class="store-name">정글 오락실</span>
+                <button class="info-add-btn" id="infoAddBtn">정보 추가</button>
+            </div>
+            <div class="store-info">
+                <div class="store-address">경기도 용인시 처인구 영문로 55 1층</div>
+                <div class="tag-group">
+                    <button class="tag-btn has">ATM</button>
+                </div>
+            </div>
+        </div>
+        <div class="machine-list"></div>
+    </div>
+
+    <!-- 팝업 영역 수정 -->
+    <div id="popup" class="popup-bg" style="display:none;">
+        <div class="popup-content popup-flex">
+            <!-- 왼쪽 영역 -->
+            <div class="popup-left">
+                <div class="popup-store-name">정글 오락실</div>
+                <div class="popup-form-group">
+                    <label class="popup-label">사진 업로드</label>
+                    <input type="file" class="popup-input" accept="image/*">
+                </div>
+                <div class="popup-form-group">
+                    <label class="popup-label">기계 개수</label>
+                    <input type="number" class="popup-input" min="1" value="1">
+                </div>
+                <div class="popup-form-group">
+                    <label class="popup-label">기계 이름</label>
+                    <input type="text" class="popup-input" placeholder="기계 이름 입력">
+                </div>
+                <div class="popup-form-group">
+                    <label class="popup-label">기계 종류</label>
+                    <select class="popup-machine-type popup-input">
+                        <option value="">선택하세요</option>
+                        <option value="Action">Action</option>
+                        <option value="Air_Hockey_Ball_Toss">Air_Hockey_Ball_Toss</option>
+                        <option value="Boxing_Machine">Boxing_Machine</option>
+                        <option value="Claw_Machine">Claw_Machine</option>
+                        <option value="Dance_Pad">Dance_Pad</option>
+                        <option value="Dart">Dart</option>
+                        <option value="Driving_Simulate">Driving_Simulate</option>
+                        <option value="Fighting">Fighting</option>
+                        <option value="Gun_Shooter">Gun_Shooter</option>
+                        <option value="Punching_Machine">Punching_Machine</option>
+                        <option value="Puzzle_Game">Puzzle_Game</option>
+                        <option value="Racing">Racing</option>
+                        <option value="Retro_Game">Retro_Game</option>
+                        <option value="Rhythm">Rhythm</option>
+                        <option value="Run_and_Gun">Run_and_Gun</option>
+                        <option value="Sports">Sports</option>
+                    </select>
+                </div>
+            </div>
+            <!-- 오른쪽 영역 -->
+            <div class="popup-right">
+                <div class="popup-tags">
+                    <label class="popup-label">가게 태그 선택</label>
+                    <div class="tag-btn-group">
+                        <button class="tag-btn" type="button">ATM</button>
+                        <button class="tag-btn" type="button">현금교환기</button>
+                        <button class="tag-btn" type="button">주차장</button>
+                        <button class="tag-btn" type="button">흡연실</button>
+                        <button class="tag-btn" type="button">와이파이</button>
+                        <button class="tag-btn" type="button">24시간</button>
+                    </div>
+                </div>
+                <div class="popup-machine-list">
+                    <label class="popup-label">기계 목록</label>
+                    <div class="machine-list-scroll"></div>
+                </div>
+            </div>
+            <span class="popup-close" id="popupClose">&times;</span>
+            <!-- 확인 버튼 추가 -->
+            <button class="popup-confirm-btn" type="button">확인</button>
+        </div>
+    </div>
+
+    <!-- 작성자 수정내역 팝업 추가 -->
+    <div id="writer-popup" class="popup-bg" style="display:none;">
+        <div class="writer-popup-content">
+            <span class="writer-popup-close" id="writerPopupClose">&times;</span>
+            <h2 style="margin-bottom:18px;">작성자 수정 내역</h2>
+            <table class="writer-edit-table">
+                <thead>
+                    <tr>
+                        <th>항목</th>
+                        <th>수정 전</th>
+                        <th>수정 후</th>
+                    </tr>
+                </thead>
+                <tbody id="writerEditBody">
+                    <!-- 자바스크립트로 내용 채움 -->
+                </tbody>
+            </table>
+            <button class="writer-report-btn" type="button">신고</button>
+        </div>
+    </div>
+
+    <script src="page4.js" defer></script>
+</body>
+
+</html>

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>간단 게시판</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 40px; }
+    #postForm { display: none; margin-bottom: 20px; }
+    #posts { margin-bottom: 30px; }
+    .post { border-bottom: 1px solid #ddd; padding: 10px 0; }
+    .post-title { font-weight: bold; }
+    .post-content { margin: 5px 0 0 10px; color: #555; }
+    button { margin-top: 10px; }
+  </style>
+</head>
+<body>
+  <h1>간단 게시판</h1>
+
+  <!-- 게시글 목록이 표시될 영역 -->
+  <div id="posts">
+    <!-- 게시글 목록이 여기에 표시됩니다 -->
+  </div>
+
+  <!-- 게시글 작성 폼을 띄우는 버튼 -->
+  <button id="showFormBtn" onclick="showForm()">게시글 작성</button>
+
+  <!-- 게시글 작성 폼 (기본적으로 숨겨짐) -->
+  <div id="postForm">
+    <h2>게시글 작성</h2>
+    <input type="text" id="title" placeholder="제목"><br>
+    <textarea id="content" placeholder="내용"></textarea><br>
+    <button onclick="savePost()">저장하기</button>
+    <button onclick="hideForm()">취소</button>
+  </div>
+
+  <script>
+    // 게시글 목록을 서버에서 불러와서 화면에 표시하는 함수
+    function loadPosts() {
+      fetch("/posts")
+        .then(res => res.json())
+        .then(data => {
+          const postsDiv = document.getElementById("posts");
+          postsDiv.innerHTML = "";
+          if (data.length === 0) {
+            postsDiv.innerHTML = "<p>게시글이 없습니다.</p>";
+            return;
+          }
+          // 최신 게시글이 위에 오도록 역순 정렬
+          data.slice().reverse().forEach(post => {
+            const postEl = document.createElement("div");
+            postEl.className = "post";
+            postEl.innerHTML = `
+              <div class="post-title">${escapeHtml(post.title)}</div>
+              <div class="post-content">${escapeHtml(post.content)}</div>
+            `;
+            postsDiv.appendChild(postEl);
+          });
+        });
+    }
+
+    // HTML 태그 이스케이프(간단 XSS 방지)
+    function escapeHtml(text) {
+      if (!text) return "";
+      return text.replace(/[&<>"']/g, function(m) {
+        return ({
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          '"': '&quot;',
+          "'": '&#39;'
+        })[m];
+      });
+    }
+
+    function showForm() {
+      document.getElementById("postForm").style.display = "block";
+      document.getElementById("showFormBtn").style.display = "none";
+    }
+
+    function hideForm() {
+      document.getElementById("postForm").style.display = "none";
+      document.getElementById("showFormBtn").style.display = "inline";
+      document.getElementById("title").value = "";
+      document.getElementById("content").value = "";
+    }
+
+    // 게시글을 서버에 저장하는 함수 (AJAX)
+    function savePost() {
+      const title = document.getElementById("title").value.trim();
+      const content = document.getElementById("content").value.trim();
+
+      if (!title || !content) {
+        alert("제목과 내용을 모두 입력해 주세요.");
+        return;
+      }
+
+      fetch("/save", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title, content })
+      })
+      .then(response => response.json().then(data => ({status: response.status, body: data})))
+      .then(({status, body}) => {
+        if (status !== 201) {
+          alert(body.message || "저장 실패");
+          return;
+        }
+        alert("저장 완료: " + body["message"]);
+        hideForm();
+        loadPosts();
+      })
+      .catch((err) => {
+        alert("저장 중 오류가 발생했습니다.");
+        console.error(err);
+      });
+    }
+
+    // 페이지가 로드될 때 게시글 목록을 불러옴
+    window.onload = loadPosts;
+  </script>
+</body>
+</html>
