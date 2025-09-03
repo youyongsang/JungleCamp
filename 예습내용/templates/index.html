@@ -1,0 +1,282 @@
+<!DOCTYPE html> <!-- HTML5 문서임을 선언 -->
+<html>
+<head>
+  <title>간단 게시판</title> <!-- 브라우저 탭에 표시될 제목 -->
+  <meta charset="UTF-8"> <!-- 한글 인코딩 설정 -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- 반응형 웹을 위한 설정 -->
+  <style>
+    /* 전체 페이지의 배경색과 폰트, 여백 설정 */
+    body {
+      background: #f7f7fa; /* 전체 배경색(연한 회색) */
+      font-family: 'Segoe UI', Arial, sans-serif; /* 기본 폰트 지정 */
+      margin: 0; /* 바깥 여백 제거 */
+      padding: 0; /* 안쪽 여백 제거 */
+    }
+    /* 게시판 전체를 감싸는 중앙 카드 스타일 */
+    .container {
+      max-width: 500px; /* 최대 너비 500px */
+      margin: 60px auto; /* 위아래 60px, 좌우 중앙 정렬 */
+      background: #fff; /* 카드 배경색(흰색) */
+      border-radius: 12px; /* 카드 모서리 둥글게 */
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08); /* 카드 그림자 효과 */
+      padding: 32px 28px 24px 28px; /* 카드 내부 여백 */
+    }
+    /* 게시판 제목 스타일 */
+    h2 {
+      text-align: center; /* 가운데 정렬 */
+      color: #333; /* 진한 회색 글자 */
+      margin-bottom: 28px; /* 아래쪽 여백 */
+    }
+    /* 게시글 목록 전체 영역 스타일 */
+    .post-list {
+      margin-bottom: 32px; /* 아래쪽 여백 */
+    }
+    /* 각 게시글 카드 스타일 */
+    .post-item {
+      background: #f4f6fb; /* 게시글 카드 배경색(연한 파랑/회색) */
+      border-radius: 6px; /* 카드 모서리 둥글게 */
+      padding: 14px 16px; /* 카드 내부 여백 */
+      margin-bottom: 10px; /* 카드 간 간격 */
+      border-left: 4px solid #6c63ff; /* 왼쪽 포인트 컬러(보라색) */
+      transition: background 0.2s; /* 배경색 전환 효과 */
+    }
+    /* 게시글 제목 스타일 */
+    .post-title {
+      font-weight: bold; /* 굵은 글씨 */
+      color: #333; /* 진한 회색 */
+      margin-bottom: 4px; /* 아래쪽 여백 */
+    }
+    /* 게시글 내용 스타일 */
+    .post-content {
+      color: #555; /* 중간 회색 */
+      font-size: 14px; /* 글자 크기 */
+      white-space: pre-line; /* 줄바꿈, 공백 유지 */
+    }
+    /* 게시글 작성 버튼 스타일 */
+    .write-btn {
+      width: 100%; /* 전체 너비 */
+      padding: 12px 0; /* 위아래 여백 */
+      background: linear-gradient(90deg, #6c63ff 60%, #48b1f3 100%); /* 그라데이션 배경(보라~파랑) */
+      color: #fff; /* 흰색 글씨 */
+      border: none; /* 테두리 없음 */
+      border-radius: 6px; /* 모서리 둥글게 */
+      font-size: 16px; /* 글자 크기 */
+      font-weight: bold; /* 굵은 글씨 */
+      cursor: pointer; /* 마우스 오버 시 손가락 모양 */
+      margin-bottom: 18px; /* 아래쪽 여백 */
+      transition: background 0.2s; /* 배경색 전환 효과 */
+    }
+    /* 게시글 작성 버튼 호버(마우스 오버) 시 스타일 */
+    .write-btn:hover {
+      background: linear-gradient(90deg, #574fd6 60%, #3498db 100%); /* 더 진한 보라~파랑 그라데이션 */
+    }
+    /* 입력 폼 라벨 스타일 */
+    .form-label {
+      font-size: 15px; /* 글자 크기 */
+      color: #555; /* 중간 회색 */
+      margin-bottom: 6px; /* 아래쪽 여백 */
+      display: block; /* 블록 요소로 표시 */
+    }
+    /* 제목, 내용 입력 필드 스타일 */
+    input[type="text"], textarea {
+      width: 100%; /* 전체 너비 */
+      padding: 10px 12px; /* 내부 여백 */
+      margin-bottom: 18px; /* 아래쪽 여백 */
+      border: 1px solid #d1d5db; /* 연한 회색 테두리 */
+      border-radius: 6px; /* 모서리 둥글게 */
+      font-size: 15px; /* 글자 크기 */
+      background: #fafbfc; /* 입력 필드 배경색(아주 연한 회색) */
+      transition: border 0.2s; /* 테두리 색상 전환 효과 */
+      box-sizing: border-box; /* 패딩, 테두리 포함 크기 계산 */
+    }
+    /* 입력 필드 포커스(클릭) 시 스타일 */
+    input[type="text"]:focus, textarea:focus {
+      border: 1.5px solid #6c63ff; /* 보라색 테두리 강조 */
+      outline: none; /* 기본 포커스 테두리 제거 */
+      background: #fff; /* 배경색 흰색으로 변경 */
+    }
+    /* 내용 입력란(텍스트에어리어) 높이 및 리사이즈 설정 */
+    textarea {
+      min-height: 90px; /* 최소 높이 */
+      resize: vertical; /* 세로 방향만 크기 조절 가능 */
+    }
+    /* 저장 버튼 스타일 */
+    .save-btn {
+      width: 100%; /* 전체 너비 */
+      padding: 12px 0; /* 위아래 여백 */
+      background: linear-gradient(90deg, #6c63ff 60%, #48b1f3 100%); /* 그라데이션 배경 */
+      color: #fff; /* 흰색 글씨 */
+      border: none; /* 테두리 없음 */
+      border-radius: 6px; /* 모서리 둥글게 */
+      font-size: 16px; /* 글자 크기 */
+      font-weight: bold; /* 굵은 글씨 */
+      cursor: pointer; /* 마우스 오버 시 손가락 모양 */
+      transition: background 0.2s; /* 배경색 전환 효과 */
+      margin-top: 8px; /* 위쪽 여백 */
+    }
+    /* 저장 버튼 호버(마우스 오버) 시 스타일 */
+    .save-btn:hover {
+      background: linear-gradient(90deg, #574fd6 60%, #3498db 100%); /* 더 진한 보라~파랑 그라데이션 */
+    }
+    /* 저장 완료/실패 메시지 스타일 */
+    .alert {
+      margin-top: 18px; /* 위쪽 여백 */
+      padding: 12px; /* 내부 여백 */
+      background: #eaf6e9; /* 성공 시 연한 초록 배경 */
+      color: #2e7d32; /* 성공 시 초록 글씨 */
+      border-radius: 5px; /* 모서리 둥글게 */
+      text-align: center; /* 가운데 정렬 */
+      display: none; /* 기본적으로 숨김 */
+    }
+    /* 게시글 작성 폼 숨김 처리 */
+    #writeForm {
+      display: none; /* 기본적으로 숨김 */
+      margin-top: 16px; /* 위쪽 여백 */
+    }
+  </style>
+</head>
+<body>
+  <!-- 중앙 카드 컨테이너 -->
+  <div class="container">
+    <h2>게시판</h2> <!-- 게시판 제목 -->
+
+    <!-- 게시글 목록 영역 -->
+    <div class="post-list" id="postList">
+      <!-- 게시글이 여기에 동적으로 추가됨 -->
+    </div>
+
+    <!-- 게시글 작성 버튼 -->
+    <button class="write-btn" onclick="showWriteForm()">게시글 작성</button>
+
+    <!-- 게시글 작성 폼 -->
+    <div id="writeForm">
+      <label for="title" class="form-label">제목</label> <!-- 제목 입력란 라벨 -->
+      <input type="text" id="title" placeholder="제목을 입력하세요"> <!-- 제목 입력란 -->
+      <label for="content" class="form-label">내용</label> <!-- 내용 입력란 라벨 -->
+      <textarea id="content" placeholder="내용을 입력하세요"></textarea> <!-- 내용 입력란 -->
+      <button class="save-btn" id="saveBtn" onclick="savePost()">저장하기</button> <!-- 저장 버튼 -->
+      <div id="alert" class="alert"></div> <!-- 저장 완료 메시지 표시 영역 -->
+    </div>
+  </div>
+
+  <script>
+    // 게시글 목록을 저장하는 배열
+    let posts = [];
+
+    // 게시글 작성 폼을 보여주는 함수
+    function showWriteForm() {
+      document.getElementById("writeForm").style.display = "block"; // 작성 폼 보이기
+      document.getElementById("title").focus(); // 제목 입력란에 포커스
+      document.getElementById("alert").style.display = "none"; // 알림 숨기기
+      document.getElementById("saveBtn").textContent = "저장하기"; // 버튼 텍스트 초기화
+      document.getElementById("saveBtn").disabled = false; // 버튼 활성화
+    }
+
+    // 특수문자 체크 정규식 (한글, 영문, 숫자, 공백만 허용)
+    function hasSpecialChar(str) {
+      return /[^a-zA-Z0-9가-힣\s]/.test(str);
+    }
+
+    // 게시글을 저장하는 함수
+    function savePost() {
+      const title = document.getElementById("title").value; // 제목 입력값 가져오기
+      const content = document.getElementById("content").value; // 내용 입력값 가져오기
+      const alertBox = document.getElementById("alert"); // 알림 메시지 영역
+      const saveBtn = document.getElementById("saveBtn"); // 저장 버튼
+
+      // 제목에 특수문자 포함 시
+      if (hasSpecialChar(title)) {
+        alertBox.style.display = "block";
+        alertBox.style.background = "#f8d7da";
+        alertBox.style.color = "#721c24";
+        alertBox.textContent = "저장실패: 제목에 특수문자가 포함되어 있습니다.";
+        saveBtn.textContent = "저장실패";
+        saveBtn.disabled = true;
+        setTimeout(() => {
+          saveBtn.textContent = "저장하기";
+          saveBtn.disabled = false;
+        }, 1200);
+        return;
+      }
+
+      // 입력값 유효성 검사
+      if (!title.trim()) {
+        alertBox.style.display = "block";
+        alertBox.style.background = "#fff3cd";
+        alertBox.style.color = "#856404";
+        alertBox.textContent = "제목을 입력해주세요.";
+        return;
+      }
+      if (!content.trim()) {
+        alertBox.style.display = "block";
+        alertBox.style.background = "#fff3cd";
+        alertBox.style.color = "#856404";
+        alertBox.textContent = "내용을 입력해주세요.";
+        return;
+      }
+
+      // 게시글을 posts 배열에 추가
+      posts.unshift({ title: title, content: content });
+
+      // 게시글 목록 다시 그리기
+      renderPosts();
+
+      // 입력값 초기화
+      document.getElementById("title").value = "";
+      document.getElementById("content").value = "";
+
+      // 저장 완료 메시지 표시 및 버튼 텍스트 변경
+      alertBox.style.display = "block";
+      alertBox.style.background = "#eaf6e9";
+      alertBox.style.color = "#2e7d32";
+      alertBox.textContent = "저장 완료!";
+      saveBtn.textContent = "저장완료";
+      saveBtn.disabled = true;
+
+      // 작성 폼 1초 후 닫기 및 버튼/알림 초기화
+      setTimeout(() => {
+        document.getElementById("writeForm").style.display = "none";
+        alertBox.style.display = "none";
+        saveBtn.textContent = "저장하기";
+        saveBtn.disabled = false;
+      }, 1000);
+    }
+
+    // 게시글 목록을 화면에 그리는 함수
+    function renderPosts() {
+      const postList = document.getElementById("postList");
+      postList.innerHTML = ""; // 기존 목록 비우기
+
+      if (posts.length === 0) {
+        // 게시글이 없을 때 안내 메시지
+        postList.innerHTML = "<div style='color:#aaa;text-align:center;padding:24px 0;'>등록된 게시글이 없습니다.</div>";
+        return;
+      }
+
+      // 각 게시글을 목록에 추가
+      posts.forEach(post => {
+        const postDiv = document.createElement("div");
+        postDiv.className = "post-item";
+
+        const titleDiv = document.createElement("div");
+        titleDiv.className = "post-title";
+        titleDiv.textContent = post.title;
+
+        const contentDiv = document.createElement("div");
+        contentDiv.className = "post-content";
+        contentDiv.textContent = post.content;
+
+        postDiv.appendChild(titleDiv);
+        postDiv.appendChild(contentDiv);
+
+        postList.appendChild(postDiv);
+      });
+    }
+
+    // 페이지 로드 시 게시글 목록 초기화
+    window.onload = function() {
+      renderPosts();
+    }
+  </script>
+</body>
+</html>
